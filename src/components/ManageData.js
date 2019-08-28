@@ -7,6 +7,7 @@ class ManageData extends React.Component {
     super(props);
     this.state={
       act: 0,
+      activeItem: -1,
       index: '',
       datas: [
         {
@@ -18,7 +19,7 @@ class ManageData extends React.Component {
           active: 'active'
         },
         {
-          id: 'user_id',
+          id: 'item_id',
           name: 'item_id',
           description: 'Contains the primary key used to identity a user of the system.',
           type: 'Contains the primary key used to identity a user of the system.',
@@ -36,7 +37,7 @@ class ManageData extends React.Component {
           name: 'item_views',
           description: 'Contains the primary key used to identity a user of the system.',
           type: 'Contains the primary key used to identity a user of the system.',
-          sensitivity: 'true'
+          sensitivity: 'false'
         } ,
         {
           id: 'item_favorites',
@@ -50,6 +51,13 @@ class ManageData extends React.Component {
     }
   }
 
+  componentDidMount(){
+    setTimeout(function() {
+      let firstLi = document.querySelector('.li a')
+      firstLi.classList.add('active')
+    }, 1000)
+  }
+
   edit = (e) => {
     e.preventDefault()
     var edit = document.getElementsByClassName('edit')
@@ -58,7 +66,6 @@ class ManageData extends React.Component {
     }
 
     var data = document.getElementsByClassName('data')
-    console.log(data)
     for(var i = 0; i < data.length; i++) {
       data[i].classList.add('active')
     }
@@ -68,6 +75,8 @@ class ManageData extends React.Component {
 
     var btnEdit = document.getElementById('btnEdit')
     btnEdit.style.display = "none"
+
+    this.refs.id.focus()
   }
 
   save = (e) => {
@@ -88,29 +97,42 @@ class ManageData extends React.Component {
     var btnEdit = document.getElementById('btnEdit')
     btnEdit.style.display = "block"
 
+    // let data = this.state.datas[localStorage.getItem("Index")];
+    // this.refs.id.value = data.name;
+    // this.refs.description.value = data.description
+    // this.refs.type.value = data.type
+    // this.refs.sensitivity.value = data.sensitivity
+
     let datas = this.state.datas
-    // let user_id = this.refs.user_id.value
-    // let user_description = this.refs.user_description.value
-    // let user_type = this.refs.user_type.value
-    // let user_sensitivity = this.refs.user_sensitivity.value
+    let index = localStorage.getItem("Index");
+    console.log(index)
+    datas[index].name = this.refs.id.value
+    datas[index].description = this.refs.description.value
+    datas[index].type = this.refs.type.value
+    datas[index].sensitivity = this.refs.sensitivity.value
+    
+    this.refs.idName.value = datas[index].name
 
-    // let data = {
-    //    user_id, user_description, user_type, user_sensitivity
-    // }
-
-    // datas.push(data)
-
-    // this.setState({
-    //   datas: datas
-    // })
+    this.setState({
+      datas: datas
+    })
   }
 
   show = (i) => {
     let data = this.state.datas[i];
     this.refs.id.value = data.name;
+    this.refs.idName.value = data.name;
     this.refs.description.value = data.description
     this.refs.type.value = data.type
     this.refs.sensitivity.value = data.sensitivity
+    localStorage.setItem("Index", i);
+    this.setState({
+      activeItem: i
+    })
+    let link = document.querySelectorAll('.list a')
+    for(var i = 0; i < link.length; i++) {
+      link[i].classList.add('noActive')
+    }
   }
 
   render () {
@@ -120,11 +142,13 @@ class ManageData extends React.Component {
             <Container>
               <Sidebar className="ul">
                   {datas.map((data, i) => 
-                  <Li key={i} className="li">
-                      <Link onClick={()=>this.show(i)} className={data.active}>
+                  <List key={i} className="list">
+                      <Link
+                        onClick={()=>this.show(i)} 
+                        className={(this.state.activeItem === i) ? 'active' : ''}>
                         {data.name}
                       </Link>
-                  </Li>
+                  </List>
                   )}
                   
                   <BtnAdd>+ Add key</BtnAdd>
@@ -133,14 +157,17 @@ class ManageData extends React.Component {
                 <form>
                   <H3 ref="h3">
                     <div className="data">
-                      <p>user_id</p>
+                      <input 
+                        type="text" 
+                        ref="idName"
+                        placeholder="user_id" />
                     </div>
                     <div className="edit">
                       <p>Key name</p>
                       <input 
                         type="text" 
                         ref="id"
-                        placeholder="Id" />
+                        placeholder="user_id" />
                     </div>
                   </H3>
                   <Item>
@@ -152,7 +179,8 @@ class ManageData extends React.Component {
                       <p>Description</p>
                       <input 
                         type="textarea" 
-                        ref="description" placeholder="Description" />
+                        ref="description" 
+                        placeholder="Description" />
                     </div>
                   </Item>
                   <Item>
@@ -175,12 +203,14 @@ class ManageData extends React.Component {
                     <div className="edit">
                       <p>Is this personal data?</p>
                       <input 
-                        type="text" ref="sensitivity" />
+                        type="text" ref="sensitivity" 
+                        />
                     </div>
                   </Item>
 
                   <BtnEdit onClick={this.edit} id="btnEdit">Edit this</BtnEdit>
-                  <BtnSave onClick={this.save} id="btnSave">Save</BtnSave>
+
+                  <BtnSave onClick={(e)=>this.save(e)} id="btnSave">Save</BtnSave>
 
                 </form>
                 <div>
@@ -223,9 +253,14 @@ const Sidebar = styled.ul`
   padding-bottom: 10px;
   width: 30%;
 `
-const Li = styled.li`
+const List = styled.li`
   width: 100%;
   background: black;
+  &:first-child {
+    a {
+      background: #7a8900;
+    }
+  }
 `
 const Link = styled.a`
   padding: 10px;
@@ -236,9 +271,11 @@ const Link = styled.a`
   transition: .25s linear;
   cursor: pointer;
   &:hover,
-  &.active {
-      color: white;
+  &.active{
       background: #7a8900;
+  }
+  &.noActive{
+    background: black !important;
   }
 `
 const BtnAdd = styled.a`
@@ -280,7 +317,17 @@ const H3 = styled.div`
     &.active {
       display: none;
     }
+    input {
+      pointer-events: none;
+    }
   }
+  input {
+    border: none;
+    ::placeholder {
+      color: black;
+    }
+  }
+  
 `
 const BtnEdit =styled.button`
   position: absolute;
