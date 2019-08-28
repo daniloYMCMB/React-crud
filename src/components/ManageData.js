@@ -123,6 +123,7 @@ class ManageData extends React.Component {
     this.refs.id.value = data.name;
     this.refs.idName.value = data.name;
     this.refs.description.value = data.description
+    this.refs.descriptionValue.value = data.description
     this.refs.type.value = data.type
     this.refs.sensitivity.value = data.sensitivity
     localStorage.setItem("Index", i);
@@ -133,6 +134,7 @@ class ManageData extends React.Component {
     for(var i = 0; i < link.length; i++) {
       link[i].classList.add('noActive')
     }
+    this.refs.id.focus()
   }
 
   render () {
@@ -173,14 +175,18 @@ class ManageData extends React.Component {
                   <Item>
                     <div className="data">
                       <h4>Description</h4>
-                      <p ref="description">Contains the primary key used to identity a user of the system.</p>
+                      <input 
+                        type="text"
+                        ref="descriptionValue"
+                        placeholder="Contains the primary key used to identity a user of the system." />
                     </div>
                     <div className="edit">
                       <p>Description</p>
                       <input 
                         type="textarea" 
                         ref="description" 
-                        placeholder="Description" />
+                        placeholder="Contains the primary key used to identity a user of the system."
+                        rows="5" />
                     </div>
                   </Item>
                   <Item>
@@ -191,8 +197,9 @@ class ManageData extends React.Component {
                     <div className="edit">
                       <p>Type</p>
                       <input 
-                        type="text" 
-                        ref="type" />
+                        ref="type"
+                        type="text"
+                      />
                     </div>
                   </Item>
                   <Item>
@@ -319,15 +326,16 @@ const H3 = styled.div`
     }
     input {
       pointer-events: none;
+      width: 90%;
     }
   }
   input {
     border: none;
+    width: 90%;
     ::placeholder {
       color: black;
     }
   }
-  
 `
 const BtnEdit =styled.button`
   position: absolute;
@@ -380,6 +388,9 @@ const Item = styled.div`
   }
   .edit {
     display: none;
+    input {
+      border: 1px solid gray;
+    }
   }
   .active {
     display: block;
@@ -388,6 +399,18 @@ const Item = styled.div`
     display: block;
     &.active {
       display: none;
+    }
+    input {
+      pointer-events: none;
+      width: 90%;
+      font-size: 13px;
+    }
+  }
+  input {
+    border: none;
+    width: 90%;
+    ::placeholder {
+      color: black;
     }
   }
 `

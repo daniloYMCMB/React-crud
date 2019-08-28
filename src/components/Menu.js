@@ -1,5 +1,10 @@
 import React, {Component} from 'react'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import styled from 'styled-components';
+
+import Index from './Index'
+import Request from './Request'
+import ManageData from './ManageData'
 
 const Nav = styled.div`
   margin: 40px auto;
@@ -19,7 +24,7 @@ const Logo = styled.p`
 `
 const Li = styled.li`
 `
-const Link = styled.a`
+const Enlace = styled.p`
     margin: 2px;
     padding: 10px;
     color: #7a8900;
@@ -34,20 +39,32 @@ const Link = styled.a`
 
 class Menu extends React.Component {
     render(){
-        return  <Nav className="nav">
-                    <Logo>DATA GATE</Logo>
-                    <Ul className="ul">
-                        <Li className="li">
-                            <Link>Review</Link>
-                        </Li>
-                        <Li className="li">
-                            <Link>Request</Link>
-                        </Li>
-                        <Li className="li">
-                            <Link>Manage</Link>
-                        </Li>
-                    </Ul>
-                </Nav>
+        return  <Router>
+                    <Nav className="nav">
+                        <Logo>DATA GATE</Logo>
+                        <Ul className="ul">
+                            <Li className="li">
+                                <Link to="/">
+                                    <Enlace>Review</Enlace>
+                                </Link>
+                            </Li>
+                            <Li className="li">
+                                <Link to="/request">
+                                    <Enlace>Request</Enlace>
+                                </Link>
+                            </Li>
+                            <Li className="li">
+                                <Link to="/manage">
+                                    <Enlace>Manage</Enlace>
+                                </Link>
+                            </Li>
+                        </Ul>
+                    </Nav>
+
+                    <Route path="/" exact component={Index} />
+                    <Route path="/request/" component={Request} />
+                    <Route path="/manage/" component={ManageData} />
+                </Router>
     }
 }
 export default Menu
